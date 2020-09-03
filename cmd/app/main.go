@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"github.com/DBoyara/Netology-Go-14/pkg/app"
 	"github.com/DBoyara/Netology-Go-14/pkg/card"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"net"
 	"net/http"
@@ -32,9 +34,25 @@ func main() {
 }
 
 func execute(addr string) (err error) {
+	dsn := "postgres://postgres:example@localhost:5432/db"
+	ctx := context.Background()
+	pool, err := pgxpool.Connect(ctx, dsn)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer pool.Close()
+
+	conn, err := pool.Acquire(ctx)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Release()
+
 	cardSvc := card.NewService()
 	mux := http.NewServeMux()
-	application := app.NewServer(cardSvc, mux)
+	application := app.NewServer(cardSvc, mux, ctx, conn)
 	application.Init()
 
 	server := &http.Server{

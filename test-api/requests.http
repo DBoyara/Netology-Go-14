@@ -1,11 +1,11 @@
 ### Send get request to get all users card
 GET http://127.0.0.1:8000/getCards?userId=1 HTTP/1.1
 
-###
+### Send get request to get all transactions by card
 GET http://localhost:8080/getTransactions?cardId=1 HTTP/1.1
 
-###
-GET http://localhost:8080/getAnalyticCategories?userId=1 HTTP/1.1
+### Send get request to get most paid categories
+GET http://localhost:8080/getMostPaid?userId=1 HTTP/1.1
 
-###
-GET http://localhost:8080/getAnalyticSum?userId=1 HTTP/1.1
+### Send get request to get most bought categories
+GET http://localhost:8080/getMostOftenBought?userId=1 HTTP/1.1

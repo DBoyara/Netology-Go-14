@@ -3,6 +3,7 @@ package card
 import (
 	"errors"
 	"sync"
+	"time"
 )
 
 var (
@@ -11,6 +12,8 @@ var (
 	ErrUserDoesNotExist   = errors.New("user does not exist")
 	ErrNoBaseCard         = errors.New("user dont have base card")
 	ErrNotSpecifiedUserId = errors.New("user id unspecified ")
+	ErrCardNotFound       = errors.New("cars does not exist ")
+	ErrNoRowExec          = errors.New("now row exec")
 )
 
 type UserCards []*Card
@@ -18,10 +21,14 @@ type UserCards []*Card
 type UserID int64
 
 type Card struct {
-	Id     int64
-	Issuer string
-	Type   string
-	Number int64
+	Id      int64
+	Number  int64
+	Balance int64
+	Issuer  string
+	Type    string
+	OwnerId UserID
+	Status  string
+	Created time.Time
 }
 
 type Service struct {
@@ -87,10 +94,14 @@ func (s *Service) Add(userId UserID, typeCard, issuerCard string) (*Card, error)
 	s.lastID = cards.nextCardNumber()
 
 	newCard := &Card{
-		Id:     s.lastID,
-		Issuer: issuerCard,
-		Type:   typeCard,
-		Number: s.lastID,
+		Id:      s.lastID,
+		Issuer:  issuerCard,
+		Type:    typeCard,
+		Number:  s.lastID,
+		Balance: 0,
+		OwnerId: userId,
+		Status:  "ACTIVE",
+		Created: time.Now(),
 	}
 	s.Cards[userId] = append(s.Cards[userId], newCard)
 

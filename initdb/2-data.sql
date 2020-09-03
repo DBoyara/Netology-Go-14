@@ -4,9 +4,9 @@ VALUES ('login1', 'password', 'Иван', 'Иванов', 'Иванович', '0
        ('login3', 'password', 'Василий', 'Васинов', 'Васильевич', '0003 00000003', '1960-06-06', 'INACTIVE');
 
 INSERT INTO cards ("number", balance, issuer, holder, owner_id, status)
-VALUES ('4929100232729184', 1000000, 'Visa', 'user1', 1, 'ACTIVE'),
-       ('4539670260962412', 1000000, 'Visa', 'user2', 2, 'ACTIVE'),
-       ('2720990990763192', 0, 'MasterCard', 'user2', 2, 'INACTIVE');
+VALUES (4929100232729184, 1000000, 'Visa', 'user1', 1, 'ACTIVE'),
+       (4539670260962412, 1000000, 'Visa', 'user2', 2, 'ACTIVE'),
+       (2720990990763192, 0, 'MasterCard', 'user2', 2, 'INACTIVE');
 
 INSERT INTO icons (url)
 VALUES ('http://i1.com'),
