@@ -224,7 +224,7 @@ func (s *Server) getMostOftenBought(w http.ResponseWriter, r *http.Request) {
 	`, intUserId).Scan(&mostOftenBought.MccId, &mostOftenBought.Count, &mostOftenBought.Description)
 	if err != nil {
 		if err != pgx.ErrNoRows {
-			dtos := dto.ErrDTO{Err: pgx.ErrNoRows}
+			dtos := dto.ErrDTO{Err: pgx.ErrNoRows.Error()}
 			jsonResponse(w, r, dtos)
 			return
 		}
