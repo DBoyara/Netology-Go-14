@@ -1,10 +1,10 @@
-package app
+package server
 
 import (
 	"context"
 	"encoding/json"
-	"github.com/DBoyara/Netology-Go-14/pkg/app/dto"
 	"github.com/DBoyara/Netology-Go-14/pkg/card"
+	"github.com/DBoyara/Netology-Go-14/pkg/server/dto"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"
@@ -51,24 +51,27 @@ func (s *Server) getCards(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cards, _ := s.cardSvc.All(card.UserID(intUserId))
-	var dtos []*dto.CardDTO
+	var cards []*dto.CardDTO
+	rows, err := s.conn.Query(s.ctx, `
+		SELECT id, "number", balance, issuer, owner_id, status, created 
+		FROM cards c 
+		WHERE owner_id = $1
+	`, intUserId)
 
-	for _, c := range cards {
-		dtos = append(
-			dtos,
-			&dto.CardDTO{
-				Id:      c.Id,
-				Number:  c.Number,
-				Type:    c.Type,
-				Issuer:  c.Issuer,
-				OwnerId: card.UserID(intUserId),
-				Balance: c.Balance,
-				Status:  c.Status,
-				Created: c.Created,
-			})
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &dto.CardDTO{}
+		err = rows.Scan(&c.Id, &c.Number, &c.Balance, &c.Issuer, &c.OwnerId, &c.Status, &c.Created)
+		if err != nil {
+			dtos := dto.ErrDTO{Err: card.ErrNoRowExec.Error()}
+			jsonResponse(w, r, dtos)
+			return
+		}
+		cards = append(cards, c)
 	}
-	jsonResponse(w, r, dtos)
+
+	jsonResponse(w, r, cards)
 }
 
 func (s *Server) addCard(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +177,7 @@ func (s *Server) getMostPaid(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mostPaid := &dto.MostPaid{}
+	mostPaid := &dto.MostPaidDTO{}
 	err = s.conn.QueryRow(s.ctx, `
 		SELECT m.id, SUM(t.amount) AS sum_transactions, m.description
 		FROM cards c
@@ -211,7 +214,7 @@ func (s *Server) getMostOftenBought(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mostOftenBought := &dto.MostOftenBought{}
+	mostOftenBought := &dto.MostOftenBoughtDTO{}
 	err = s.conn.QueryRow(s.ctx, `
 		SELECT t.mcc_id, count(*) AS "count", m.description
 		FROM cards c

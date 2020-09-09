@@ -31,13 +31,13 @@ type TransactionDTO struct {
 	IconId      int64     `json:"icon_id"`
 }
 
-type MostOftenBought struct {
+type MostOftenBoughtDTO struct {
 	MccId       int64  `json:"mcc_id"`
 	Count       int64  `json:"count"`
 	Description string `json:"description"`
 }
 
-type MostPaid struct {
+type MostPaidDTO struct {
 	MccId       int64  `json:"mcc_id"`
 	Amount      int64  `json:"amount"`
 	Description string `json:"description"`
